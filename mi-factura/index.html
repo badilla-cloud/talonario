@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Crea facturas, cotizaciones y recibos, guárdalos y descárgalos en PDF.">
+  <title>Talonario | Facturas y cotizaciones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/icono.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra__marca">
+      <img src="img/icono.svg" alt="" width="34" height="34">
+      <span>Talonario</span>
+    </div>
+    <nav class="barra__nav" aria-label="Secciones">
+      <button class="nav-btn" data-vista="editor" type="button">Nuevo documento</button>
+      <button class="nav-btn" data-vista="documentos" type="button">Documentos</button>
+      <button class="nav-btn" data-vista="clientes" type="button">Clientes</button>
+      <button class="nav-btn" data-vista="negocio" type="button">Mi negocio</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ===================== EDITOR ===================== -->
+    <section id="vista-editor" class="vista" aria-labelledby="titulo-editor">
+      <div class="editor">
+        <form id="form-doc" class="editor__form" novalidate>
+          <div class="editor__cabeza">
+            <h1 id="titulo-editor">Nuevo documento</h1>
+            <div class="tipo" role="radiogroup" aria-label="Tipo de documento">
+              <label><input type="radio" name="tipo" value="factura" checked><span>Factura</span></label>
+              <label><input type="radio" name="tipo" value="cotizacion"><span>Cotización</span></label>
+              <label><input type="radio" name="tipo" value="recibo"><span>Recibo</span></label>
+            </div>
+          </div>
+
+          <fieldset class="bloque">
+            <legend>Datos del documento</legend>
+            <div class="fila fila--3">
+              <label class="campo">Número
+                <input type="text" id="doc-numero" required>
+              </label>
+              <label class="campo">Fecha
+                <input type="date" id="doc-fecha" required>
+              </label>
+              <label class="campo" id="campo-vence">Vence
+                <input type="date" id="doc-vence">
+              </label>
+            </div>
+            <div class="fila fila--2">
+              <label class="campo">Moneda
+                <select id="doc-moneda">
+                  <option value="CRC">Colones (₡)</option>
+                  <option value="USD">Dólares ($)</option>
+                </select>
+              </label>
+              <label class="campo">Estado
+                <select id="doc-estado">
+                  <option value="pendiente">Pendiente</option>
+                  <option value="pagada">Pagada</option>
+                  <option value="anulada">Anulada</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Cliente</legend>
+            <label class="campo">Elegir un cliente guardado
+              <select id="doc-cliente-guardado">
+                <option value="">Escribir uno nuevo</option>
+              </select>
+            </label>
+            <div class="fila fila--2">
+              <label class="campo">Nombre o empresa
+                <input type="text" id="cli-nombre" autocomplete="off" required>
+              </label>
+              <label class="campo">Cédula
+                <input type="text" id="cli-cedula" autocomplete="off">
+              </label>
+            </div>
+            <div class="fila fila--2">
+              <label class="campo">Correo
+                <input type="email" id="cli-correo" autocomplete="off">
+              </label>
+              <label class="campo">Teléfono
+                <input type="tel" id="cli-telefono" autocomplete="off">
+              </label>
+            </div>
+            <label class="campo">Dirección
+              <input type="text" id="cli-direccion" autocomplete="off">
+            </label>
+            <label class="check">
+              <input type="checkbox" id="cli-guardar" checked>
+              Guardar este cliente para la próxima vez
+            </label>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Productos o servicios</legend>
+            <div class="items-cabeza" aria-hidden="true">
+              <span>Descripción</span><span>Cant.</span><span>Precio</span><span>IVA</span><span></span>
+            </div>
+            <div id="lista-items" class="items"></div>
+            <button type="button" id="btn-agregar-item" class="btn btn--linea">Agregar línea</button>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Ajustes del total</legend>
+            <div class="fila fila--3">
+              <label class="campo">Descuento
+                <span class="combo">
+                  <input type="number" id="doc-descuento" min="0" step="any" value="0">
+                  <select id="doc-descuento-tipo" aria-label="Tipo de descuento">
+                    <option value="%">%</option>
+                    <option value="monto">Monto</option>
+                  </select>
+                </span>
+              </label>
+              <label class="campo">IVA (%)
+                <input type="number" id="doc-iva" min="0" max="100" step="any">
+              </label>
+              <label class="campo">Envío u otros cargos
+                <input type="number" id="doc-envio" min="0" step="any" value="0">
+              </label>
+            </div>
+            <label class="campo" id="campo-pagado">Monto ya pagado (adelanto)
+              <input type="number" id="doc-pagado" min="0" step="any" value="0">
+            </label>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Notas</legend>
+            <label class="campo">Notas para el cliente
+              <textarea id="doc-notas" rows="3" placeholder="Ejemplo: Gracias por su compra."></textarea>
+            </label>
+            <label class="campo">Términos y forma de pago
+              <textarea id="doc-terminos" rows="3" placeholder="Ejemplo: Pago por SINPE Móvil al 8888-8888."></textarea>
+            </label>
+          </fieldset>
+
+          <p id="mensaje-form" class="aviso" role="alert" hidden></p>
+
+          <div class="editor__acciones">
+            <button type="submit" class="btn btn--principal">Guardar documento</button>
+            <button type="button" id="btn-nuevo" class="btn btn--linea">Empezar uno nuevo</button>
+          </div>
+        </form>
+
+        <aside class="editor__vista" aria-label="Vista previa">
+          <div class="vista-herramientas">
+            <button type="button" id="btn-imprimir" class="btn btn--tinta">Descargar PDF</button>
+            <button type="button" id="btn-whatsapp" class="btn btn--linea">WhatsApp</button>
+            <button type="button" id="btn-correo" class="btn btn--linea">Correo</button>
+          </div>
+          <div id="hoja" class="hoja"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================== DOCUMENTOS ===================== -->
+    <section id="vista-documentos" class="vista" aria-labelledby="titulo-documentos" hidden>
+      <div class="contenedor">
+        <h1 id="titulo-documentos">Documentos</h1>
+
+        <div class="resumen" id="resumen"></div>
+
+        <div class="filtros">
+          <label class="campo">Buscar
+            <input type="search" id="buscar-doc" placeholder="Cliente o número">
+          </label>
+          <label class="campo">Tipo
+            <select id="filtro-tipo">
+              <option value="">Todos</option>
+              <option value="factura">Facturas</option>
+              <option value="cotizacion">Cotizaciones</option>
+              <option value="recibo">Recibos</option>
+            </select>
+          </label>
+          <label class="campo">Estado
+            <select id="filtro-estado">
+              <option value="">Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="vencida">Vencida</option>
+              <option value="pagada">Pagada</option>
+              <option value="anulada">Anulada</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="lista-docs" class="tabla-docs"></div>
+      </div>
+    </section>
+
+    <!-- ===================== CLIENTES ===================== -->
+    <section id="vista-clientes" class="vista" aria-labelledby="titulo-clientes" hidden>
+      <div class="contenedor">
+        <h1 id="titulo-clientes">Clientes</h1>
+        <p class="intro">Los clientes se guardan cuando haces un documento. Desde aquí puedes facturarles de nuevo o borrarlos.</p>
+        <div id="lista-clientes" class="clientes"></div>
+      </div>
+    </section>
+
+    <!-- ===================== MI NEGOCIO ===================== -->
+    <section id="vista-negocio" class="vista" aria-labelledby="titulo-negocio" hidden>
+      <div class="contenedor contenedor--angosto">
+        <h1 id="titulo-negocio">Mi negocio</h1>
+        <p class="intro">Estos datos aparecen en todos tus documentos.</p>
+
+        <form id="form-negocio" novalidate>
+          <fieldset class="bloque">
+            <legend>Datos</legend>
+            <label class="campo">Nombre del negocio
+              <input type="text" id="neg-nombre" required>
+            </label>
+            <div class="fila fila--2">
+              <label class="campo">Cédula física o jurídica
+                <input type="text" id="neg-cedula">
+              </label>
+              <label class="campo">Teléfono
+                <input type="tel" id="neg-telefono">
+              </label>
+            </div>
+            <div class="fila fila--2">
+              <label class="campo">Correo
+                <input type="email" id="neg-correo">
+              </label>
+              <label class="campo">Sitio web o red social
+                <input type="text" id="neg-web">
+              </label>
+            </div>
+            <label class="campo">Dirección
+              <input type="text" id="neg-direccion">
+            </label>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Logo</legend>
+            <div class="logo-editor">
+              <div id="logo-vista" class="logo-vista">Sin logo</div>
+              <div>
+                <label class="btn btn--linea btn--archivo">Subir logo
+                  <input type="file" id="neg-logo" accept="image/*">
+                </label>
+                <button type="button" id="btn-quitar-logo" class="btn btn--texto">Quitar</button>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Firma</legend>
+            <p class="ayuda">Firma con el dedo o el mouse. Aparece al final de cada documento.</p>
+            <canvas id="firma" class="firma" width="500" height="160" aria-label="Espacio para firmar"></canvas>
+            <button type="button" id="btn-borrar-firma" class="btn btn--texto">Borrar firma</button>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Apariencia de los documentos</legend>
+            <div class="campo">Plantilla
+              <div class="plantillas" role="radiogroup" aria-label="Plantilla">
+                <label><input type="radio" name="plantilla" value="clasica"><span>Clásica</span></label>
+                <label><input type="radio" name="plantilla" value="banda"><span>Banda de color</span></label>
+                <label><input type="radio" name="plantilla" value="minima"><span>Mínima</span></label>
+              </div>
+            </div>
+            <div class="campo">Color
+              <div class="colores" id="colores" role="radiogroup" aria-label="Color"></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend>Valores por defecto</legend>
+            <div class="fila fila--3">
+              <label class="campo">Moneda
+                <select id="neg-moneda">
+                  <option value="CRC">Colones (₡)</option>
+                  <option value="USD">Dólares ($)</option>
+                </select>
+              </label>
+              <label class="campo">IVA (%)
+                <input type="number" id="neg-iva" min="0" max="100" step="any">
+              </label>
+              <label class="campo">Días para pagar
+                <input type="number" id="neg-dias" min="0" step="1">
+              </label>
+            </div>
+            <label class="campo">Términos de pago por defecto
+              <textarea id="neg-terminos" rows="2"></textarea>
+            </label>
+          </fieldset>
+
+          <p id="mensaje-negocio" class="aviso" role="status" hidden></p>
+          <button type="submit" class="btn btn--principal">Guardar datos del negocio</button>
+        </form>
+
+        <section class="bloque respaldo" aria-labelledby="titulo-respaldo">
+          <h2 id="titulo-respaldo">Copia de seguridad</h2>
+          <p class="ayuda">Todo se guarda en este navegador. Descarga una copia de vez en cuando; si borras el historial o cambias de computadora, puedes recuperar tus datos con ella.</p>
+          <div class="respaldo__acciones">
+            <button type="button" id="btn-exportar" class="btn btn--linea">Descargar copia</button>
+            <label class="btn btn--linea btn--archivo">Restaurar copia
+              <input type="file" id="archivo-importar" accept="application/json,.json">
+            </label>
+          </div>
+        </section>
+
+        <p class="nota-legal">Si tu negocio está inscrito en Hacienda, los comprobantes con validez fiscal se emiten con factura electrónica. Usa estos documentos como proformas, cotizaciones o control interno.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
