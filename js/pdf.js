@@ -1,8 +1,7 @@
 /* ==========================================================
    Talonario – PDF y compartir
-   El PDF se arma dentro de la página con la librería html2pdf
-   (se carga desde un CDN en index.html). Si no cargó, se usa la
-   ventana de impresión del navegador como plan B.
+   El PDF se dibuja en js/pdfgen.js, sin librerías externas.
+   Si algo falla, se usa la ventana de impresión como plan B.
    ========================================================== */
 
 let pdfPendiente = null; // PDF listo para compartir con un segundo toque
@@ -12,39 +11,12 @@ function nombreArchivoPDF() {
   return `${TIPOS[doc.tipo].nombre} ${doc.numero}${cliente}.pdf`.replace(/[\\/:*?"<>|]/g, "");
 }
 
-// Crea el archivo PDF a partir de la hoja de vista previa
+// Crea el archivo PDF del documento actual (ver js/pdfgen.js)
 async function crearArchivoPDF() {
   leerFormulario();
   pintarHoja();
-
-  if (typeof html2pdf === "undefined") return null;
-
-  // Se usa una copia de la hoja con ancho fijo de carta, para que el PDF
-  // salga igual en el celular y en la computadora
-  const copia = $("#hoja").cloneNode(true);
-  copia.removeAttribute("id");
-  copia.classList.add("hoja--pdf");
-  const caja = document.createElement("div");
-  caja.className = "pdf-caja";
-  caja.appendChild(copia);
-  document.body.appendChild(caja);
-
-  try {
-    const blob = await html2pdf()
-      .set({
-        margin: 0,
-        filename: nombreArchivoPDF(),
-        image: { type: "jpeg", quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] }
-      })
-      .from(copia)
-      .outputPdf("blob");
-    return new File([blob], nombreArchivoPDF(), { type: "application/pdf" });
-  } finally {
-    caja.remove();
-  }
+  const blob = await generarPDFDocumento(doc, datos.negocio);
+  return new File([blob], nombreArchivoPDF(), { type: "application/pdf" });
 }
 
 function descargarArchivo(archivo) {
@@ -145,9 +117,9 @@ async function compartir(destino, boton) {
     ocupado(boton, false);
   }
 
-  // Sin librería de PDF: se envía solo el mensaje, como antes
+  // Si el PDF no se pudo crear, se envía solo el mensaje
   if (!archivo) {
-    avisar("No se pudo crear el PDF. Revisa tu conexión a internet.");
+    avisar("No se pudo crear el PDF; se envió solo el mensaje.");
     if (destino === "whatsapp") abrirWhatsAppConTexto(textoParaCompartir());
     else abrirCorreoConTexto(textoParaCompartir());
     return;

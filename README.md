@@ -21,7 +21,7 @@ Aplicación web para crear **facturas, cotizaciones y recibos**, guardarlos y de
 1. Abre `index.html` con Live Server o publícala en GitHub Pages.
 2. La primera vez completa **Mi negocio**.
 3. Crea tu documento en **Nuevo documento** y presiona **Guardar documento**.
-4. Presiona **Descargar PDF**, **WhatsApp** o **Correo**. El PDF se crea con la librería html2pdf.js (necesita internet); si no carga, se abre la ventana de impresión para guardarlo como PDF.
+4. Presiona **Descargar PDF**, **WhatsApp** o **Correo**. El PDF lo crea la propia app (js/pdfgen.js), sin internet ni librerías externas.
 
 ## Importante
 - Los datos se guardan en el navegador (localStorage). Descarga una copia de seguridad cada cierto tiempo desde **Mi negocio**.

@@ -357,11 +357,6 @@ fieldset { min-width: 0; }
 .fila-baja td:first-child { box-shadow: inset 4px 0 0 var(--rojo); }
 
 /* ---------- PDF ---------- */
-/* Copia de la hoja que se usa solo para generar el PDF, fuera de la pantalla */
-.pdf-caja { position: fixed; left: -10000px; top: 0; width: 816px; }
-.hoja--pdf { width: 816px; min-height: 1056px; box-shadow: none; border-radius: 0; font-size: 13.5px; }
-.hoja--pdf .sello { animation: none; }
-
 /* Panel para el segundo toque al compartir */
 .panel-compartir {
   position: fixed; left: 50%; bottom: 20px; z-index: 60; transform: translateX(-50%);
