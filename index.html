@@ -21,6 +21,7 @@
       <button class="nav-btn" data-vista="editor" type="button">Nuevo documento</button>
       <button class="nav-btn" data-vista="documentos" type="button">Documentos</button>
       <button class="nav-btn" data-vista="clientes" type="button">Clientes</button>
+      <button class="nav-btn" data-vista="inventario" type="button">Inventario</button>
       <button class="nav-btn" data-vista="negocio" type="button">Mi negocio</button>
     </nav>
   </header>
@@ -107,6 +108,7 @@
               <span>Descripción</span><span>Cant.</span><span>Precio</span><span>IVA</span><span></span>
             </div>
             <div id="lista-items" class="items"></div>
+            <datalist id="lista-productos"></datalist>
             <button type="button" id="btn-agregar-item" class="btn btn--linea">Agregar línea</button>
           </fieldset>
 
@@ -203,6 +205,66 @@
         <h1 id="titulo-clientes">Clientes</h1>
         <p class="intro">Los clientes se guardan cuando haces un documento. Desde aquí puedes facturarles de nuevo o borrarlos.</p>
         <div id="lista-clientes" class="clientes"></div>
+      </div>
+    </section>
+
+    <!-- ===================== INVENTARIO ===================== -->
+    <section id="vista-inventario" class="vista" aria-labelledby="titulo-inventario" hidden>
+      <div class="contenedor">
+        <h1 id="titulo-inventario">Inventario</h1>
+        <p class="intro">Tu lista de productos con precio y stock. Al escribir un producto en una factura, el precio se llena solo. El stock lo actualizas tú con los botones − y +.</p>
+
+        <div class="resumen" id="resumen-inventario"></div>
+
+        <form id="form-producto" class="bloque form-producto" novalidate>
+          <h2 id="titulo-form-producto">Agregar producto</h2>
+          <div class="fila fila--3">
+            <label class="campo">Nombre
+              <input type="text" id="prod-nombre" autocomplete="off" required>
+            </label>
+            <label class="campo">Código (opcional)
+              <input type="text" id="prod-codigo" autocomplete="off">
+            </label>
+            <label class="campo">Categoría (opcional)
+              <input type="text" id="prod-categoria" list="lista-categorias" autocomplete="off">
+              <datalist id="lista-categorias"></datalist>
+            </label>
+          </div>
+          <div class="fila fila--3">
+            <label class="campo">Precio de venta
+              <input type="number" id="prod-precio" min="0" step="any" required>
+            </label>
+            <label class="campo">Stock actual
+              <input type="number" id="prod-stock" min="0" step="1" value="0" required>
+            </label>
+            <label class="campo">Avisar cuando queden
+              <input type="number" id="prod-minimo" min="0" step="1" value="5">
+            </label>
+          </div>
+          <label class="check">
+            <input type="checkbox" id="prod-iva" checked>
+            Este producto lleva IVA
+          </label>
+          <div class="form-producto__acciones">
+            <button type="submit" id="btn-guardar-producto" class="btn btn--principal">Agregar producto</button>
+            <button type="button" id="btn-cancelar-producto" class="btn btn--linea" hidden>Cancelar</button>
+          </div>
+        </form>
+
+        <div class="filtros filtros--inv">
+          <label class="campo">Buscar
+            <input type="search" id="buscar-producto" placeholder="Nombre o código">
+          </label>
+          <label class="campo">Categoría
+            <select id="filtro-categoria-inv"><option value="">Todas</option></select>
+          </label>
+          <label class="check check--filtro">
+            <input type="checkbox" id="filtro-stock-bajo">
+            Solo stock bajo
+          </label>
+        </div>
+
+        <div id="lista-productos-inv" class="tabla-docs"></div>
       </div>
     </section>
 
@@ -314,9 +376,23 @@
     </section>
   </main>
 
+  <div id="panel-compartir" class="panel-compartir" role="dialog" aria-labelledby="panel-compartir-titulo" hidden>
+    <p id="panel-compartir-titulo" class="panel-compartir__titulo">Tu PDF está listo</p>
+    <p id="panel-compartir-nombre" class="panel-compartir__nombre"></p>
+    <div class="panel-compartir__acciones">
+      <button type="button" id="btn-panel-compartir" class="btn btn--principal">Enviar PDF</button>
+      <button type="button" id="btn-panel-descargar" class="btn btn--linea">Descargar</button>
+      <button type="button" id="btn-panel-cerrar" class="btn btn--texto">Cerrar</button>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <!-- Librería para crear el PDF dentro de la página -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/inventario.js"></script>
+  <script src="js/pdf.js"></script>
 </body>
 </html>

@@ -339,6 +339,40 @@ fieldset { min-width: 0; }
 
 .nota-legal { color: var(--tinta-suave); font-size: 0.85rem; margin-top: 20px; max-width: 70ch; }
 
+/* ---------- Inventario ---------- */
+.form-producto h2 { font-size: 1.05rem; }
+.form-producto__acciones { display: flex; gap: 10px; margin-top: 14px; }
+.filtros--inv { grid-template-columns: 2fr 1fr auto; align-items: center; }
+.check--filtro { margin-top: 10px; }
+
+.stock { display: inline-flex; align-items: center; gap: 4px; }
+.stock__btn {
+  width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
+  border: 1.5px solid var(--linea); background: var(--papel); color: var(--tinta);
+  font-size: 1.05rem; font-weight: 700; line-height: 1;
+}
+.stock__btn:hover { border-color: var(--carbon); color: var(--carbon); }
+.stock__num { min-width: 2.4ch; text-align: center; font-variant-numeric: tabular-nums; }
+.stock__aviso { display: block; color: var(--rojo) !important; font-weight: 700; }
+.fila-baja td:first-child { box-shadow: inset 4px 0 0 var(--rojo); }
+
+/* ---------- PDF ---------- */
+/* Copia de la hoja que se usa solo para generar el PDF, fuera de la pantalla */
+.pdf-caja { position: fixed; left: -10000px; top: 0; width: 816px; }
+.hoja--pdf { width: 816px; min-height: 1056px; box-shadow: none; border-radius: 0; font-size: 13.5px; }
+.hoja--pdf .sello { animation: none; }
+
+/* Panel para el segundo toque al compartir */
+.panel-compartir {
+  position: fixed; left: 50%; bottom: 20px; z-index: 60; transform: translateX(-50%);
+  width: min(420px, calc(100% - 32px));
+  background: var(--papel); border: 1px solid var(--linea); border-radius: 12px;
+  padding: 18px; box-shadow: 0 18px 40px rgba(24, 32, 63, 0.28);
+}
+.panel-compartir__titulo { margin: 0; font-weight: 800; font-size: 1.05rem; }
+.panel-compartir__nombre { margin: 2px 0 14px; color: var(--tinta-suave); font-size: 0.88rem; overflow-wrap: anywhere; }
+.panel-compartir__acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+
 /* ---------- Toast ---------- */
 .toast {
   position: fixed; left: 50%; bottom: 22px; z-index: 50;
@@ -363,7 +397,7 @@ fieldset { min-width: 0; }
   .editor { padding: 16px; }
   .contenedor { padding: 20px 16px 48px; }
   .bloque { padding: 14px; }
-  .fila--2, .fila--3, .filtros { grid-template-columns: 1fr; }
+  .fila--2, .fila--3, .filtros, .filtros--inv { grid-template-columns: 1fr; }
   .items-cabeza { display: none; }
   .item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px 34px; }
   .item__desc { grid-column: 1 / -1; }
@@ -390,7 +424,8 @@ fieldset { min-width: 0; }
 @media print {
   body { background: #fff; }
   .barra, .editor__form, .vista-herramientas, .toast,
-  #vista-documentos, #vista-clientes, #vista-negocio { display: none !important; }
+  #vista-documentos, #vista-clientes, #vista-negocio, #vista-inventario,
+  .panel-compartir { display: none !important; }
   .editor { display: block; padding: 0; }
   .editor__vista { position: static; }
   .hoja { box-shadow: none; min-height: 0; padding: 0; border-radius: 0; }

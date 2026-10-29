@@ -25,6 +25,7 @@ function mostrarVista(nombre) {
   if (nombre === "documentos") pintarDocumentos();
   if (nombre === "clientes") pintarClientes();
   if (nombre === "negocio") cargarFormNegocio();
+  if (nombre === "inventario") pintarInventario();
   window.scrollTo(0, 0);
 }
 
@@ -160,7 +161,7 @@ function pintarItems() {
     fila.dataset.indice = indice;
     fila.innerHTML = `
       <label class="item__desc"><span class="solo-lector">Descripción</span>
-        <input type="text" data-campo="descripcion" placeholder="Producto o servicio" value="${escaparHTML(item.descripcion)}">
+        <input type="text" data-campo="descripcion" list="lista-productos" autocomplete="off" placeholder="Producto o servicio" value="${escaparHTML(item.descripcion)}">
       </label>
       <label><span class="solo-lector">Cantidad</span>
         <input type="number" data-campo="cantidad" min="0" step="any" value="${item.cantidad}">
@@ -577,29 +578,7 @@ function textoParaCompartir() {
   return texto;
 }
 
-function compartirWhatsApp() {
-  leerFormulario();
-  let telefono = doc.cliente.telefono.replace(/\D/g, "");
-  if (telefono.length === 8) telefono = "506" + telefono; // número de Costa Rica sin código
-  const url = "https://wa.me/" + telefono + "?text=" + encodeURIComponent(textoParaCompartir() + "\n(Adjunto el PDF.)");
-  window.open(url, "_blank", "noopener");
-}
-
-function compartirCorreo() {
-  leerFormulario();
-  const asunto = `${TIPOS[doc.tipo].nombre} ${doc.numero} - ${datos.negocio.nombre}`;
-  window.location.href = `mailto:${encodeURIComponent(doc.cliente.correo)}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(textoParaCompartir() + "\n\nAdjunto el PDF.")}`;
-}
-
-function imprimir() {
-  leerFormulario();
-  pintarHoja();
-  const tituloOriginal = document.title;
-  // El nombre sugerido del PDF sale del título de la página
-  document.title = `${TIPOS[doc.tipo].nombre} ${doc.numero} ${doc.cliente.nombre}`.trim();
-  window.print();
-  document.title = tituloOriginal;
-}
+// compartirWhatsApp, compartirCorreo e imprimir están en js/pdf.js
 
 /* ---------------------------------------------------------
    Mi negocio
@@ -791,6 +770,7 @@ function importarDatos(evento) {
       localStorage.setItem(CLAVE_DATOS, JSON.stringify(nuevos));
       datos = cargarDatos();
       cargarSelectClientes();
+      cargarSugerenciasProductos();
       cargarFormNegocio();
       empezarNuevo();
       avisar("Copia restaurada.");
@@ -829,6 +809,17 @@ function registrarEventos() {
       item[campo] = campo === "iva" ? evento.target.checked
         : campo === "descripcion" ? evento.target.value
         : Number(evento.target.value) || 0;
+
+      // Si la descripción coincide con un producto del inventario, se llenan precio e IVA
+      if (campo === "descripcion") {
+        const producto = buscarProductoPorNombre(evento.target.value);
+        if (producto) {
+          item.precio = producto.precio;
+          item.iva = producto.iva;
+          fila.querySelector('[data-campo="precio"]').value = producto.precio;
+          fila.querySelector('[data-campo="iva"]').checked = producto.iva;
+        }
+      }
     }
     if (evento.target.classList.contains("con-error")) {
       evento.target.classList.remove("con-error");

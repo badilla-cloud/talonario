@@ -10,7 +10,8 @@ Aplicación web para crear **facturas, cotizaciones y recibos**, guardarlos y de
 - Descuento en % o monto, IVA configurable, envío y adelantos.
 - Colones (₡) o dólares ($).
 - Vista previa en vivo con 3 plantillas y 6 colores.
-- Descarga en PDF, envío por WhatsApp o correo.
+- Descarga en PDF y envío del PDF por WhatsApp o correo (en el celular se adjunta directo).
+- Inventario: productos con precio, stock, categoría y aviso de stock bajo. Al escribir un producto en una factura, el precio se llena solo.
 - Lista de documentos con búsqueda, filtros y estados: pendiente, vencida, pagada y anulada.
 - Resumen de lo facturado, cobrado y por cobrar.
 - Convertir una cotización en factura y duplicar documentos.
@@ -20,7 +21,7 @@ Aplicación web para crear **facturas, cotizaciones y recibos**, guardarlos y de
 1. Abre `index.html` con Live Server o publícala en GitHub Pages.
 2. La primera vez completa **Mi negocio**.
 3. Crea tu documento en **Nuevo documento** y presiona **Guardar documento**.
-4. Para el PDF presiona **Descargar PDF** y elige **Guardar como PDF** en la ventana de impresión.
+4. Presiona **Descargar PDF**, **WhatsApp** o **Correo**. El PDF se crea con la librería html2pdf.js (necesita internet); si no carga, se abre la ventana de impresión para guardarlo como PDF.
 
 ## Importante
 - Los datos se guardan en el navegador (localStorage). Descarga una copia de seguridad cada cierto tiempo desde **Mi negocio**.

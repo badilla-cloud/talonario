@@ -41,6 +41,7 @@ function datosIniciales() {
     },
     clientes: [],
     documentos: [],
+    productos: [],
     contadores: { factura: 1, cotizacion: 1, recibo: 1 }
   };
 }
@@ -56,6 +57,7 @@ function cargarDatos() {
       negocio: Object.assign(base.negocio, guardado.negocio),
       clientes: Array.isArray(guardado.clientes) ? guardado.clientes : [],
       documentos: Array.isArray(guardado.documentos) ? guardado.documentos : [],
+      productos: Array.isArray(guardado.productos) ? guardado.productos : [],
       contadores: Object.assign(base.contadores, guardado.contadores)
     };
   } catch (error) {
